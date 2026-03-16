@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo - Kelola Hidupmu</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #2563EB;
+    --brand-light: #EFF6FF;
+    --brand-mid: #BFDBFE;
+    --brand-dark: #1D4ED8;
+    --ink: #0F172A;
+    --ink2: #334155;
+    --ink3: #64748B;
+    --surface: #FFFFFF;
+    --surface2: #F8FAFC;
+    --surface3: #F1F5F9;
+    --border: #E2E8F0;
+    --green: #10B981;
+    --green-bg: #ECFDF5;
+    --amber: #F59E0B;
+    --amber-bg: #FFFBEB;
+    --coral: #EF4444;
+    --coral-bg: #FEF2F2;
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  body { background: var(--surface); overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.95); position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .nav-logo {
+    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.4rem;
+    color: var(--brand); letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-logo-dot { width: 8px; height: 8px; background: var(--brand); border-radius: 50%; display: inline-block; }
+  .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-links a { color: var(--ink2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--brand); }
+  .btn-nav {
+    background: var(--brand); color: white; border: none; border-radius: var(--r-sm);
+    padding: .5rem 1.1rem; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background .2s, transform .1s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-nav:hover { background: var(--brand-dark); }
+  .btn-nav:active { transform: scale(0.97); }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 4rem;
+    max-width: 900px; margin: 0 auto; text-align: center;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--brand-light); color: var(--brand);
+    border: 1px solid var(--brand-mid); border-radius: 99px;
+    font-size: 13px; font-weight: 600; padding: 5px 14px;
+    margin-bottom: 1.5rem;
+  }
+  .hero-badge-dot { width: 6px; height: 6px; background: var(--brand); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+  h1 {
+    font-family: 'Sora', sans-serif; font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.15;
+    color: var(--ink); letter-spacing: -1.5px; margin-bottom: 1.25rem;
+  }
+  h1 .accent { color: var(--brand); }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.15rem); color: var(--ink3);
+    max-width: 540px; margin: 0 auto 2.5rem; line-height: 1.7;
+    font-weight: 400;
+  }
+  .hero-cta-row { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--brand); color: white; border: none;
+    border-radius: var(--r-md); padding: .85rem 2rem;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: all .2s; font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 4px 14px rgba(37,99,235,.3);
+  }
+  .btn-primary:hover { background: var(--brand-dark); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.35); }
+  .btn-secondary {
+    background: transparent; color: var(--ink2); border: 1px solid var(--border);
+    border-radius: var(--r-md); padding: .85rem 1.5rem;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    transition: all .2s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-secondary:hover { border-color: var(--brand); color: var(--brand); }
+  .hero-trust { margin-top: 1.5rem; font-size: 13px; color: var(--ink3); }
+  .hero-trust span { color: var(--green); font-weight: 600; }
+
+  /* MOCKUP CARD */
+  .hero-mockup {
+    margin: 3rem auto 0; max-width: 480px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-xl); padding: 1.25rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,.08);
+  }
+  .mockup-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .mockup-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 15px; }
+  .mockup-date { font-size: 12px; color: var(--ink3); }
+  .task-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: .7rem .9rem; border-radius: var(--r-md);
+    margin-bottom: 8px; background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+  .task-item.done { opacity: 0.55; }
+  .task-check {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .task-check.checked { background: var(--green); color: white; }
+  .task-check.unchecked { border: 2px solid var(--border); background: white; }
+  .task-text { flex: 1; font-size: 13px; font-weight: 500; }
+  .task-item.done .task-text { text-decoration: line-through; color: var(--ink3); }
+  .task-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 600;
+  }
+  .tag-today { background: var(--brand-light); color: var(--brand); }
+  .tag-urgent { background: var(--coral-bg); color: var(--coral); }
+  .tag-low { background: var(--green-bg); color: var(--green); }
+  .mockup-progress { margin-top: 1rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink3); margin-bottom: 6px; }
+  .progress-bar { height: 6px; background: var(--surface3); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--brand); border-radius: 99px; width: 60%; }
+
+  /* SECTION COMMONS */
+  section { padding: 4.5rem 2rem; }
+  .container { max-width: 880px; margin: 0 auto; }
+  .section-tag {
+    display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--brand); background: var(--brand-light);
+    padding: 4px 12px; border-radius: 99px; margin-bottom: 1rem;
+  }
+  h2 {
+    font-family: 'Sora', sans-serif; font-weight: 800;
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem); line-height: 1.2;
+    letter-spacing: -0.8px; margin-bottom: .75rem; color: var(--ink);
+  }
+  .section-desc { font-size: 1rem; color: var(--ink3); line-height: 1.7; max-width: 560px; }
+
+  /* PROBLEM */
+  .problem-section { background: var(--surface2); }
+  .problem-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin-top: 2.5rem;
+  }
+  .problem-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 1.25rem; position: relative; overflow: hidden;
+  }
+  .problem-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .problem-card.red::before { background: var(--coral); }
+  .problem-card.amber::before { background: var(--amber); }
+  .problem-card.blue::before { background: var(--brand); }
+  .problem-icon { font-size: 22px; margin-bottom: .75rem; }
+  .problem-card h3 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: .4rem; }
+  .problem-card p { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+
+  /* FEATURES */
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem; margin-top: 2.5rem;
+  }
+  .feature-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 1.5rem;
+    transition: border-color .2s, transform .2s;
+  }
+  .feature-card:hover { border-color: var(--brand-mid); transform: translateY(-3px); }
+  .feature-icon-wrap {
+    width: 44px; height: 44px; border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 1rem;
+  }
+  .fi-blue { background: var(--brand-light); }
+  .fi-green { background: var(--green-bg); }
+  .fi-amber { background: var(--amber-bg); }
+  .feature-card h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: .5rem; }
+  .feature-card p { font-size: 13.5px; color: var(--ink3); line-height: 1.65; }
+  .feature-pill {
+    display: inline-block; margin-top: .75rem;
+    font-size: 11.5px; font-weight: 600; color: var(--brand);
+    background: var(--brand-light); padding: 3px 10px; border-radius: 99px;
+  }
+
+  /* HOW IT WORKS */
+  .howitworks-section { background: var(--surface2); }
+  .steps-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem; margin-top: 3rem; position: relative;
+  }
+  .step {
+    text-align: center; position: relative;
+  }
+  .step-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--brand); color: white;
+    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem; position: relative; z-index: 1;
+  }
+  .step h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: .4rem; }
+  .step p { font-size: 13.5px; color: var(--ink3); line-height: 1.65; }
+  .step-icon { font-size: 28px; margin-bottom: .5rem; }
+
+  /* CTA BANNER */
+  .cta-section {
+    background: var(--brand); padding: 4rem 2rem; text-align: center;
+  }
+  .cta-section h2 { color: white; }
+  .cta-section p { color: rgba(255,255,255,.8); margin: .75rem auto 2rem; max-width: 440px; font-size: 1rem; line-height: 1.7; }
+  .btn-white {
+    background: white; color: var(--brand); border: none;
+    border-radius: var(--r-md); padding: .85rem 2rem;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: all .2s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-white:hover { background: var(--brand-light); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,.7);
+    padding: 2.5rem 2rem;
+  }
+  .footer-inner {
+    max-width: 880px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 2rem;
+    justify-content: space-between; align-items: flex-start;
+  }
+  .footer-brand { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.3rem; color: white; }
+  .footer-brand p { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 4px; font-weight: 400; font-family: 'DM Sans', sans-serif; }
+  .footer-links { display: flex; gap: 3rem; flex-wrap: wrap; }
+  .footer-col h4 { font-size: 13px; font-weight: 700; color: white; margin-bottom: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,.55); text-decoration: none; margin-bottom: 6px; transition: color .2s; }
+  .footer-col a:hover { color: white; }
+  .footer-bottom {
+    max-width: 880px; margin: 1.5rem auto 0;
+    border-top: 1px solid rgba(255,255,255,.1); padding-top: 1.25rem;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+    font-size: 12px; color: rgba(255,255,255,.35);
+  }
+  .socials { display: flex; gap: 10px; }
+  .social-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.6); font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .2s;
+    text-decoration: none;
+  }
+  .social-btn:hover { background: rgba(255,255,255,.2); color: white; }
+
+  @media (max-width: 600px) {
+    nav { padding: .75rem 1rem; }
+    .nav-links { display: none; }
+    section { padding: 3rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    Todo
+  </div>
+  <div class="nav-links">
+    <a href="#">Fitur</a>
+    <a href="#">Harga</a>
+    <a href="#">Tentang</a>
+    <a href="#">Blog</a>
+  </div>
+  <button class="btn-nav">Daftar Gratis</button>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Produktivitas tanpa stres
+    </div>
+    <h1>Semua Tugasmu,<br>Satu Tempat yang <span class="accent">Rapi</span></h1>
+    <p class="hero-sub">
+      Stop bergantung sama catatan tempel dan otak yang penuh. Todo bantu kamu atur, prioritaskan, dan selesaikan semua hal yang penting — dengan tenang.
+    </p>
+    <div class="hero-cta-row">
+      <button class="btn-primary">Daftar Gratis — Mulai Sekarang</button>
+      <button class="btn-secondary">Lihat Demo</button>
+    </div>
+    <p class="hero-trust"><span>✓ Gratis selamanya</span> &nbsp;·&nbsp; Tanpa kartu kredit &nbsp;·&nbsp; Setup 2 menit</p>
+
+    <!-- MOCKUP -->
+    <div class="hero-mockup">
+      <div class="mockup-header">
+        <span class="mockup-title">Hari ini, Senin</span>
+        <span class="mockup-date">3 dari 5 selesai</span>
+      </div>
+      <div class="task-item done">
+        <div class="task-check checked">✓</div>
+        <span class="task-text">Kirim laporan mingguan ke atasan</span>
+        <span class="task-tag tag-today">Hari ini</span>
+      </div>
+      <div class="task-item done">
+        <div class="task-check checked">✓</div>
+        <span class="task-text">Review proposal proyek klien</span>
+        <span class="task-tag tag-low">Selesai</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check unchecked"></div>
+        <span class="task-text">Presentasi UTS — slide deck</span>
+        <span class="task-tag tag-urgent">Urgent</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check unchecked"></div>
+        <span class="task-text">Follow-up email ke tim desain</span>
+        <span class="task-tag tag-today">Hari ini</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check unchecked"></div>
+        <span class="task-text">Baca materi kuliah Bab 7</span>
+        <span class="task-tag tag-low">Rendah</span>
+      </div>
+      <div class="mockup-progress">
+        <div class="progress-label">
+          <span>Progress hari ini</span>
+          <span style="font-weight:600;color:var(--brand)">60%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM SECTION -->
+<section class="problem-section">
+  <div class="container">
+    <span class="section-tag">Masalah yang Sering Terjadi</span>
+    <h2>Kewalahan itu nyata —<br>dan kamu nggak sendirian.</h2>
+    <p class="section-desc">Sebagian besar mahasiswa dan profesional mengalami hal yang sama: terlalu banyak yang harus dikerjakan, tapi nggak tahu harus mulai dari mana.</p>
+    <div class="problem-grid">
+      <div class="problem-card red">
+        <div class="problem-icon">😰</div>
+        <h3>Tugas menumpuk tanpa prioritas</h3>
+        <p>Semua terasa penting, tapi kamu nggak tahu mana yang harus dikerjakan duluan. Hasilnya? Nggak ada yang kelar.</p>
+      </div>
+      <div class="problem-card amber">
+        <div class="problem-icon">📝</div>
+        <h3>Catatan berserakan di mana-mana</h3>
+        <p>Sticky note di meja, chat ke diri sendiri, memo di hp — informasi penting hilang begitu saja.</p>
+      </div>
+      <div class="problem-card blue">
+        <div class="problem-icon">⏰</div>
+        <h3>Deadline tiba-tiba terlewat</h3>
+        <p>Kamu yakin sudah ingat semua, tapi tiba-tiba ada tugas yang terlupakan. Rasanya panik dan frustrasi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section>
+  <div class="container">
+    <span class="section-tag">Solusi untuk Kamu</span>
+    <h2>Didesain biar kamu<br>bisa fokus, bukan stres.</h2>
+    <p class="section-desc">Todo bukan sekadar to-do list biasa. Kami rancang khusus supaya otak kamu bisa istirahat sejenak — biarkan Todo yang mengingat semuanya.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-blue">🗓️</div>
+        <h3>Smart Scheduling</h3>
+        <p>Susun jadwalmu secara otomatis berdasarkan deadline dan waktu luang yang kamu punya. Nggak perlu pusing atur-atur manual.</p>
+        <span class="feature-pill">Otomatis & Cerdas</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-green">🎯</div>
+        <h3>Prioritas Tugas</h3>
+        <p>Tandai mana yang urgent, penting, atau bisa nanti. Sistem prioritas Todo bantu kamu selalu mengerjakan hal yang paling berdampak duluan.</p>
+        <span class="feature-pill">Fokus pada yang Penting</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-amber">🔔</div>
+        <h3>Notifikasi Real-time</h3>
+        <p>Pengingat cerdas yang muncul di waktu yang tepat — bukan saat kamu lagi sibuk, tapi saat kamu benar-benar bisa bertindak.</p>
+        <span class="feature-pill">Tidak Ada Lagi yang Terlewat</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="howitworks-section">
+  <div class="container">
+    <span class="section-tag">Cara Kerja</span>
+    <h2>Mulai dalam<br>3 langkah mudah.</h2>
+    <p class="section-desc">Nggak ada setup yang ribet. Dari daftar sampai produktif, cuma butuh waktu kurang dari 5 menit.</p>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-icon">👤</div>
+        <div class="step-num">1</div>
+        <h3>Buat Akun</h3>
+        <p>Daftar gratis pakai email atau Google. Tanpa kartu kredit, tanpa komitmen apapun. Langsung bisa pakai.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">✍️</div>
+        <div class="step-num">2</div>
+        <h3>Tulis Tugasmu</h3>
+        <p>Masukkan semua yang ada di benakmu. Atur deadline, kasih label prioritas, dan biarkan Todo yang mengorganisasi sisanya.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">🏆</div>
+        <div class="step-num">3</div>
+        <h3>Selesaikan Satu per Satu</h3>
+        <p>Fokus pada satu tugas di satu waktu. Centang yang sudah selesai dan rasakan kepuasannya setiap hari.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Siap mulai hari yang lebih teratur?</h2>
+    <p>Bergabunglah dengan ribuan mahasiswa dan profesional yang sudah produktif bersama Todo. Gratis, selamanya.</p>
+    <button class="btn-white">Daftar Gratis Sekarang</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      Todo
+      <p>Produktivitas tanpa stres,<br>untuk semua orang.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Produk</h4>
+        <a href="#">Fitur</a>
+        <a href="#">Harga</a>
+        <a href="#">Pembaruan</a>
+        <a href="#">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h4>Perusahaan</h4>
+        <a href="#">Tentang Kami</a>
+        <a href="#">Blog</a>
+        <a href="#">Karier</a>
+        <a href="#">Kontak</a>
+      </div>
+      <div class="footer-col">
+        <h4>Dukungan</h4>
+        <a href="#">Pusat Bantuan</a>
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Syarat & Ketentuan</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Todo. Dibuat dengan ☕ di Indonesia.</span>
+    <div class="socials">
+      <a class="social-btn" href="#">in</a>
+      <a class="social-btn" href="#">tw</a>
+      <a class="social-btn" href="#">ig</a>
+      <a class="social-btn" href="#">yt</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
